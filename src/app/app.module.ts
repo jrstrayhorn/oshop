@@ -47,10 +47,10 @@ import { AuthGuard } from './auth-guard.service';
       { path: 'shopping-cart', component: ShoppingCartComponent },
       { path: 'login', component: LoginComponent },
 
-      { path: 'check-out', component: ShoppingCartComponent, canActivate: [AuthGuard] },
+      { path: 'check-out', component: CheckOutComponent, canActivate: [AuthGuard] },
       { path: 'order-success', component: OrderSuccessComponent, canActivate: [AuthGuard] },
       { path: 'my/orders', component: MyOrdersComponent, canActivate: [AuthGuard] },
-      
+
       { path: 'admin/products', component: AdminProductsComponent, canActivate: [AuthGuard] },  // in future, define admin module and move admin related components to that module then dont need to prefix
       { path: 'admin/orders', component: AdminOrdersComponent, canActivate: [AuthGuard] },
     ])
