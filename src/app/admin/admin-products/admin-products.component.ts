@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ProductService } from '../../product.service';
 import { Subscription } from 'rxjs';
 import { Product } from '../../models/product';
+import { MatSort, MatPaginator, MatTableDataSource} from '@angular/material';
 
 @Component({
   selector: 'app-admin-products',
@@ -10,18 +11,30 @@ import { Product } from '../../models/product';
 })
 export class AdminProductsComponent implements OnInit, OnDestroy {
   products: Product[];
-  filteredProducts: any[];
   subscription: Subscription;
+  dataSource: MatTableDataSource<Product>;
+  displayedColumns: string[];
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(private productService: ProductService) {
     this.subscription = this.productService.getAll()
-      .subscribe(products => this.filteredProducts = this.products = products);
+      .subscribe(products => {
+        this.initializeTable(products);
+      });
   }
 
+  private initializeTable(products: Product[]) {
+    this.displayedColumns = ['title', 'price', 'key'];
+    this.dataSource = new MatTableDataSource(products);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+
   filter(query: string) {
-    this.filteredProducts = (query) ?
-      this.products.filter(p => p.title.toLowerCase().includes(query.toLowerCase())) :
-      this.products;
+    this.dataSource.filter = query.trim().toLowerCase();
   }
 
   // using this because we want to keep the subscription for the lifetime of the component
@@ -33,6 +46,7 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    
   }
 
 }

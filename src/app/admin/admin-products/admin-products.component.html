@@ -9,33 +9,32 @@
         type="text" class="form-control" placeholder="Search...">
 </p>
 
-<data-table
-    [items]="items"
-    [itemCount]="itemCount"
-    (reload)="reloadItems($event)"
->
-    <data-table-column
-        [property]="'title'"
-        [header]="'Title'"
-        [sortable]="true"
-        [resizable]="true"
-    >
-    </data-table-column>
-    <data-table-column
-        [property]="'price'"
-        [header]="'Price'"
-        [sortable]="true"
-        [resizable]="true"
-    >
-        <ng-template #dataTableCell let-item="product">
-            {{ product.price | currency:'USD':'symbol' }}
-        </ng-template>
-    </data-table-column>
-    <data-table-column
-        [property]="'key'"
-    >
-        <ng-template #dataTableCell let-item="product">
-            <a [routerLink]="['/admin/products/', product.key]">Edit</a>
-        </ng-template>
-    </data-table-column>
-</data-table>
+<div class="mat-elevation-z8">
+        <table mat-table matSort [dataSource]="dataSource">
+
+                <!-- Title Column -->
+                <ng-container matColumnDef="title">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+                    <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+                </ng-container>
+            
+                <!-- Price Column -->
+                <ng-container matColumnDef="price">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+                    <td mat-cell *matCellDef="let element">{{ element.price | currency:'USD':'symbol' }}</td>
+                </ng-container>
+            
+                <!-- Key/Link Column -->
+                <ng-container matColumnDef="key">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let element">
+                        <a [routerLink]="['/admin/products/', element.key]">Edit</a>
+                    </td>
+                </ng-container>
+            
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+        <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</div>
