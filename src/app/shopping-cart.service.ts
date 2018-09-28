@@ -21,6 +21,10 @@ export class ShoppingCartService {
     return this.db.object(`/shopping-carts/${cartId}`).valueChanges();
   }
 
+  private getItem(cartId: string, productId: string) {
+    return this.db.object(`/shopping-carts/${cartId}/items/${productId}`)
+  }
+
   private async getOrCreateCartId() {
     let cartId = localStorage.getItem('cartId');
     if (cartId) return cartId;
@@ -32,15 +36,11 @@ export class ShoppingCartService {
 
   async addToCart(product: Product) {
     let cartId = await this.getOrCreateCartId();
-    let item$ = this.db.object(`/shopping-carts/${cartId}/items/${product.key}`);
-    item$
-      .snapshotChanges()
-      .pipe(
-        take(1)
-        )
+    let item$ = this.getItem(cartId, product.key);
+    item$.snapshotChanges().pipe(take(1))
       .subscribe(snapshot => {
-        if (snapshot.payload.exists()) item$.update({ quantity: snapshot.payload.val()['quantity'] + 1});
-        else item$.set({ product: product, quantity: 1 });
-      })
+        let item = snapshot.payload.val();
+        item$.update({ product: product, quantity: (item ? item['quantity'] : 0) + 1 });
+      });
   }
 }
