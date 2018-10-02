@@ -36,12 +36,20 @@ export class ShoppingCartService {
   }
 
   async addToCart(product: Product) {
+    this.updateItemQuantity(product, 1);
+  }
+
+  async removeFromCart(product: Product) {
+    this.updateItemQuantity(product, -1);
+  }
+
+  private async updateItemQuantity(product: Product, change: number) {
     let cartId = await this.getOrCreateCartId();
     let item$ = this.getItem(cartId, product.key);
     item$.snapshotChanges().pipe(take(1))
       .subscribe(snapshot => {
         let item = snapshot.payload.val();
-        item$.update({ product: product, quantity: (item ? item['quantity'] : 0) + 1 });
+        item$.update({ product: product, quantity: (item ? item['quantity'] : 0) + change });
       });
   }
 }
